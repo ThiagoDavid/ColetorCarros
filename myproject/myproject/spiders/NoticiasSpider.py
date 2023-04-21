@@ -6,6 +6,10 @@ class NoticiasSpider(scrapy.Spider):
     name = "noticias"
     allowed_domains = ["quatrorodas.abril.com.br"]
     start_urls = ["https://quatrorodas.abril.com.br/noticias/"]
+    custom_settings = {
+        'DOWNLOAD_DELAY': 1,
+        'ROBOTSTXT_OBEY': True
+    }
 
     def parse(self, response):
         for noticia in response.css('div.card'):
@@ -19,6 +23,6 @@ class NoticiasSpider(scrapy.Spider):
             yield item
         
         #Paginacao
-        proxima_pagina = response.css('a.proxima::attr(href)').get()
-        if proxima_pagina is not None:
-            yield response.follow(proxima_pagina, callback = self.parse)
+        #proxima_pagina = response.css('a.proxima::attr(href)').get()
+        #if proxima_pagina is not None:
+        #    yield response.follow(proxima_pagina, callback = self.parse)
