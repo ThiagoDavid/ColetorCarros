@@ -8,35 +8,30 @@ class NoticiasSpider(scrapy.Spider):
     allowed_domains = ['quatrorodas.abril.com.br']
     start_urls = ['https://quatrorodas.abril.com.br/sitemap.xml']
     custom_settings = {
-        'DOWNLOAD_DELAY': 0.5,        
+        'DOWNLOAD_DELAY': 2,        
         'ROBOTSTXT_OBEY': True
     }
     numPaginas = 0
     def parse(self, response):
         root = ET.fromstring(response.body)
-        count = 0
         for child in root.iter('{http://www.sitemaps.org/schemas/sitemap/0.9}loc'):
-            if(count <= 2):
-                url = child.text
-                yield scrapy.Request(url, callback=self.parse_url_noticia)
-                count+=1
+            url = child.text
+            yield scrapy.Request(url, callback=self.parse_url_noticia)
 
     def parse_url_noticia(self, response):
         root = ET.fromstring(response.body)
-        count=0
         for child in root.iter('{http://www.sitemaps.org/schemas/sitemap/0.9}loc'):
-            if(count<=1):
-                url = child.text
+            url = child.text
+            self.numPaginas += 1    
+            if self.numPaginas <= 10000 :
                 yield scrapy.Request(url, callback=self.parse_noticia)
-                count+=1   
 
     def parse_noticia(self, response):
         item = Noticia()
         item['titulo'] = response.css('h1.title::text').get()  #tag h2 ou h3; classe title texto (inner text)
         item['descricao'] = response.css('h2.description::text').get()
         item['conteudo'] = response.css('section.content').get(),
-        item['url'] = response.url
-        self.numPaginas += 1        
+        item['url'] = response.url    
         yield item
 
     def closed(self, reason):
