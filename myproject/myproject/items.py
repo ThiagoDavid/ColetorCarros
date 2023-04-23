@@ -7,11 +7,9 @@ import scrapy
 
 
 class Noticia(scrapy.Item):
-    titulo = scrapy.Field()
-    categoria = scrapy.Field()
-    img_alternative = scrapy.Field()
-    image_link = scrapy.Field()
-    link = scrapy.Field()
+    titulo = scrapy.Field()    
     descricao = scrapy.Field()
+    conteudo = scrapy.Field()
+    url = scrapy.Field()
 
 
