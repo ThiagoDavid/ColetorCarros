@@ -8,7 +8,7 @@ class NoticiasSpider(scrapy.Spider):
     allowed_domains = ['quatrorodas.abril.com.br']
     start_urls = ['https://quatrorodas.abril.com.br/sitemap.xml']
     custom_settings = {
-        'DOWNLOAD_DELAY': 2,        
+        'DOWNLOAD_DELAY': 0.5,        
         'ROBOTSTXT_OBEY': True
     }
     numPaginas = 0
@@ -28,9 +28,14 @@ class NoticiasSpider(scrapy.Spider):
 
     def parse_noticia(self, response):
         item = Noticia()
+        item = Noticia()
         item['titulo'] = response.css('h1.title::text').get()  #tag h2 ou h3; classe title texto (inner text)
         item['descricao'] = response.css('h2.description::text').get()
-        item['conteudo'] = response.css('section.content').get(),
+        textos = response.css('section.content p span::text').extract()
+        texto_completo = ''.join(textos)
+        texto_sem_espacos = texto_completo.strip().rstrip('ASSINE')
+        item['conteudo'] = texto_sem_espacos
+        #item['conteudo'] = response.css('section.content').get()
         item['url'] = response.url    
         yield item
 
