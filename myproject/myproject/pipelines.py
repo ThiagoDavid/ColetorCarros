@@ -15,15 +15,11 @@ class SaveToFilePipeline:
     def open_spider(self, spider):
         if os.path.exists(self.filename):
             os.remove(self.filename)
-        self.file = open(self.filename, 'w')
+        self.file = open(self.filename, 'w', encoding='utf-8')
 
     def close_spider(self, spider):
         self.file.close()
 
     def process_item(self, item, spider):
-        text = ''.join(item['conteudo']).replace('\n', '').strip()
-        text += '<t>' + item['descricao'].replace('\n', '').strip()
-        text += '<t>' + item['titulo'].replace('\n', '').strip()
-        text += '<t>' + item['url']
-        self.file.write(text + '\n')
+        self.file.write(f"{item['titulo']} | {item['descricao']} | {item['conteudo']} | {item['url']}\n")
         return item
